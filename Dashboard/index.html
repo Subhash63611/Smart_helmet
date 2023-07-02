@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SMART HELMET</title>
+
+    <!-- update the version number as needed -->
+    <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-app.js"></script>
+
+    <!-- include only the Firebase features as you need -->
+    <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-database.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.7/all/gauge.min.js"></script>
+  
+
+    <script>
+     // REPLACE WITH YOUR web app's Firebase configuration
+     const firebaseConfig = {
+      apiKey: "AIzaSyBK0TWNCfkplnLdW5YWcYbr-GEOX_J3GcM",
+  authDomain: "ms-sams.firebaseapp.com",
+  databaseURL: "https://ms-sams-default-rtdb.firebaseio.com",
+  projectId: "ms-sams",
+  storageBucket: "ms-sams.appspot.com",
+  messagingSenderId: "216012848730",
+  appId: "1:216012848730:web:580a0c2c155867545f6263",
+  measurementId: "G-9KLNKKHJLZ"
+};
+
+      // Initialize firebase
+      firebase.initializeApp(firebaseConfig);
+
+      // Make auth and database references
+      const auth = firebase.auth();
+      const db = firebase.database();
+
+    </script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <!-- <link rel="icon" type="image/png" href="favicon.png"> -->
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+  <!--TOP BAR-->
+  <div class="topnav">
+    <h1>SMART HELMET</h1>
+  </div>
+
+  <!--AUTHENTICATION BAR (USER DETAILS/LOGOUT BUTTON)-->
+  <div id="authentication-bar" style="display: none;">
+    <p><span id="authentication-status">User Logged</span>
+       <span id="user-details">USEREMAIL</span>
+       <a href="/" id="logout-link">(logout)</a>
+    </p>
+  </div>
+
+  <!--LOGIN FORM-->
+  <form id="login-form" style="display: none;">
+    <div class="form-elements-container">
+      <label for="input-email"><b>Email</b></label>
+      <input type="text" placeholder="Enter Username" id="input-email" required>
+
+      <label for="input-password"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" id="input-password" required>
+
+      <button type="submit" id="login-button">Login</button>
+      <button type="button" id="signup-button" onclick="showSignUpForm()">Sign Up</button>
+
+      <p id="error-message" style="color:red;"></p>
+    </div>
+  </form>
+
+  <!--SIGNUP FORM-->
+<form id="signup-form" style="display: none;">
+  <div class="form-elements-container">
+    <label for="input-email-signup"><b>Email</b></label>
+    <input type="text" placeholder="Enter Email" id="input-email-signup" required>
+
+    <label for="input-password-signup"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" id="input-password-signup" required>
+
+    <label for="input-password-confirm"><b>Confirm Password</b></label>
+    <input type="password" placeholder="Confirm Password" id="input-password-confirm" required>
+
+    <button type="submit" id="signup-button">Sign Up</button>
+    <p id="signup-error-message" style="color:red;"></p>
+  </div>
+</form>
+
+  <!--CONTENT (SENSOR READINGS)-->
+  <div class="content-sign-in" id="content-sign-in">
+    <div class="cards">       
+    
+      
+       <!--EMG-->
+       <div class="card">
+        <p style = "color:rgb(255, 145, 0)">ACCELERATION</p>
+        
+        <p><i class="fas fa-bullseye" style="color:#000000;"></i> ax: <span class="reading"><span id="ax"></span></span></p>
+        
+        <p><i class="fas fa-bullseye" style="color:#000000;"></i> ay: <span class="reading"><span id="ay"></span></span></p>
+        
+        <p><i class="fas fa-bullseye" style="color:#000000;"></i> az: <span class="reading"><span id="az"></span></span></p>
+        
+       </div>
+
+       <div class="card">
+        <p style = "color:rgb(255, 145, 0)">GYROSCOPE</p>
+        
+        <p><i class="fas fa-bullseye" style="color:#000000;"></i> gx: <span class="reading"><span id="gx"></span></span></p>
+        
+        <p><i class="fas fa-bullseye" style="color:#000000;"></i> gy: <span class="reading"><span id="gy"></span></span></p>
+        
+        <p><i class="fas fa-bullseye" style="color:#000000;"></i> gz: <span class="reading"><span id="gz"></span></span></p>
+        
+       </div>
+          
+    </div>
+
+    <div id="charts-div">
+      <!--SET NUMBER OF READINGS INPUT FIELD-->
+      <div class="authentication-bar" style="background-color: white;">
+        <p style="color:red; font-size: 2em;"><b><span id="warningmsg"></span></b></p>
+      </div>
+    </div>
+     <div style="color:white; background-color:white; height: 20px;"></div>
+    <!--CHARTS-->
+  <!--  <div id="charts-div" style="display:none"> -->
+    <div id="charts-div" >
+      <!--SET NUMBER OF READINGS INPUT FIELD-->
+      <div class="authentication-bar">
+        <p><b>Graph</b></p>
+      </div>
+
+
+      
+           <!--EMG-->
+     <div class="cards">
+      <div class="card">
+        <p><i class="fas fa-bullseye" style="color:#d0743f;"></i> ACCELERATION</p>
+        <div id="chart-amp" class="chart-container"></div>
+      </div>
+    </div>
+   </div>
+ </div>
+    </div>
+  </div>
+
+
+
+  
+
+  <script src="scripts/index.js"></script>
+  <script src="scripts/auth.js"></script>
+  <script src="scripts/charts-definitions.js"></script>
+  </body>
+</html>
